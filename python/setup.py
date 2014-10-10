@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
         name="jsonplustypes",
-        version="0.2",
+        version="0.3",
         packages=["jsonplustypes",],
         license="MIT",
         long_description=open("README.txt").read(),

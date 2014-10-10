@@ -50,7 +50,7 @@ class __JSONDecoder(json.JSONDecoder):
     into objects using the DateTimeAwareJSONEncoder, back into a python object.
     """
     def __init__(self, *args, **kwargs):
-        JSONDecoder.__init__(self, object_hook=self.dict_to_object, *args, **kwargs)
+        json.JSONDecoder.__init__(self, object_hook=self.dict_to_object, *args, **kwargs)
 
     def dict_to_object(self, d):
         try:
