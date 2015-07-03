@@ -1,17 +1,19 @@
 import datetime, time
 import json
 
+_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
 
 ### DEFAULTS ###
 def encode_datetime(date_object):
-    timestamp = int(1000 * time.mktime(date_object.utctimetuple()))
+    date_string = datetime.datetime.strftime(date_object, _DATE_FORMAT)
     return {
             _TYPE_TAG:"DATETIME",
-            _VALUE_TAG:timestamp
+            _VALUE_TAG:date_string
         }
 
-def decode_datetime(timestamp):
-    return datetime.datetime.utcfromtimestamp(timestamp/1000)
+def decode_datetime(date_string):
+    return datetime.datetime.strptime(date_string, _DATE_FORMAT)
 
 def encode_float(obj):
     return format(obj, ".2f")
@@ -31,7 +33,7 @@ _VALUE_TAG = u'__VALUE__'
 
 
 class __JSONEncoder(json.JSONEncoder):
-    """Convertsi
+    """Converts
     Converts a python object, where datetime and timedelta objects are converted
     into objects that can be decoded using the DateTimeAwareJSONDecoder.
     """
