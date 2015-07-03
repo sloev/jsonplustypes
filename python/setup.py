@@ -6,7 +6,7 @@ setup(
         packages=["jsonplustypes",],
         license="MIT",
         description="json with datetimes and custom types",
-        long_description=open("README.txt").read(),
+        long_description=open("README").read(),
         maintainer="sloev",
         maintainer_email="johannesgj@gmail.com",
         url="http://github.com/sloev/jsonplustypes"
