@@ -44,7 +44,7 @@ class __JSONEncoder(json.JSONEncoder):
             func = _TYPE_FUNCS[ type(obj) ]
             return func(obj)
         except KeyError, e:
-            return JSONEncoder.default(self, obj)
+            return json.JSONEncoder.default(self, obj)
 
 class __JSONDecoder(json.JSONDecoder):
     """
