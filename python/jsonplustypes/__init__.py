@@ -1,5 +1,9 @@
 import datetime, time
 import json
+from bson.objectid import ObjectId
+
+
+#format floatsi
 
 _DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
@@ -15,13 +19,15 @@ def encode_datetime(date_object):
 def decode_datetime(date_string):
     return datetime.datetime.strptime(date_string, _DATE_FORMAT)
 
-def encode_float(obj):
-    return format(obj, ".2f")
+def encode_date(obj):
+    _dtime = datetime.datetime.combine(obj, datetime.datetime.min.time())
+    return encode_datetime(_dtime)
 
 _TYPE_FUNCS = {
     'DATETIME':decode_datetime,
     datetime.datetime:encode_datetime,
-    float:encode_float
+    datetime.date:encode_date,
+    ObjectId:str,
 }
 ### END DEFAULTS ###
 
@@ -37,13 +43,15 @@ class __JSONEncoder(json.JSONEncoder):
     Converts a python object, where datetime and timedelta objects are converted
     into objects that can be decoded using the DateTimeAwareJSONDecoder.
     """
-    def default(self, obj):
+    def _default(self, obj):
+        print type(obj)
         if isinstance(obj, basestring):
             return obj
         try:
             func = _TYPE_FUNCS[ type(obj) ]
             return func(obj)
         except KeyError, e:
+            print "type not found:", type(obj)
             return json.JSONEncoder.default(self, obj)
 
 class __JSONDecoder(json.JSONDecoder):

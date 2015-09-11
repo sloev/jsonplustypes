@@ -30,4 +30,10 @@ def decode_datetime(date_string):
 
 the github repo holds a reference javascript implementation of the same json serialization/deserialization
 
+CHANGELOG:
+==========
+0.7:
+added encoder for datetime.date and bson ObjectId
 
+0.6:
+fixed bug - JSONEncoder -> json.JSONEncoder

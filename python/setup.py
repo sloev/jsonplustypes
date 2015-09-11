@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
         name="jsonplustypes",
-        version="0.6",
+        version="0.7",
         packages=["jsonplustypes",],
         license="MIT",
         description="json with datetimes and custom types",
