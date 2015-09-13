@@ -1,9 +1,12 @@
 import datetime, time
-import json
+from json import dumps as _dumps
+from json import loads as _loads
+from json import JSONEncoder, JSONDecoder, encoder
 from bson.objectid import ObjectId
 
 
-#format floatsi
+old_FLOAT_REPR = encoder.FLOAT_REPR
+old_c_make_encoder = encoder.c_make_encoder
 
 _DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
@@ -38,45 +41,49 @@ _VALUE_TAG = u'__VALUE__'
 ### END STATIC ###
 
 
-class __JSONEncoder(json.JSONEncoder):
+class JsonPlusEncoder(JSONEncoder):
     """Converts
     Converts a python object, where datetime and timedelta objects are converted
     into objects that can be decoded using the DateTimeAwareJSONDecoder.
     """
-    def _default(self, obj):
-        print type(obj)
-        if isinstance(obj, basestring):
-            return obj
+    def default(self, obj):
         try:
-            func = _TYPE_FUNCS[ type(obj) ]
-            return func(obj)
+            return _TYPE_FUNCS[ type(obj) ](obj)
         except KeyError, e:
-            print "type not found:", type(obj)
-            return json.JSONEncoder.default(self, obj)
+            return JSONEncoder.default(self, obj)
 
-class __JSONDecoder(json.JSONDecoder):
+class JsonPlusDecoder(JSONDecoder):
     """
     Converts a json string, where datetime and timedelta objects were converted
     into objects using the DateTimeAwareJSONEncoder, back into a python object.
     """
     def __init__(self, *args, **kwargs):
-        json.JSONDecoder.__init__(self, object_hook=self.dict_to_object, *args, **kwargs)
+        JSONDecoder.__init__(self, object_hook=self.dict_to_object, *args, **kwargs)
 
     def dict_to_object(self, d):
         try:
-            func = _TYPE_FUNCS[ d[ _TYPE_TAG ] ]
-            value = d[ _VALUE_TAG ]
-            return func(value)
+            return _TYPE_FUNCS[d[_TYPE_TAG]](d[_VALUE_TAG])
         except KeyError, e:
             return d
 
 ### PUBLIC METHODS ###
 
-def dumps(data):
-    return json.dumps(data, cls=__JSONEncoder)
+def dumps(data, round_digits=False, precision=2):
+    if round_digits:
+        def float_to_str(f): return '%.*f' % (precision, f)
+
+        encoder.FLOAT_REPR = float_to_str
+        encoder.c_make_encoder = None
+
+        return _dumps(data, cls=JsonPlusEncoder)
+        #clean ups
+        encoder.FLOAT_REPR = old_FLOAT_REPR
+        encoder.c_make_encoder = old_c_make_encoder
+    else:
+        return _dumps(data, cls=JsonPlusEncoder)
 
 def loads(data):
-    return json.loads(data, cls=__JSONDecoder)
+    return _loads(data, cls=JsonPlusDecoder)
 
 def add_lookup(key, value):
     _TYPE_FUNCS[key] = value
