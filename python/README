@@ -25,6 +25,16 @@ the github repo holds a reference javascript implementation of the same json ser
 
 CHANGELOG:
 ==========
+0.7.8:
+removed bad print statement
+
+0.7.7
+fixed so now uses str(type(obj).__name__)
+
+0.7.6:
+now loads and dumps iso datetime strings with the format:
+"%Y-%m-%dT%H:%M:%S.%fZ"
+
 0.7.5:
 fixed the strange float precision limiter
 not based on monkeypatching the json.encoder.FLOAT_REPR and json.encoder.c_make_encoder, which means it now runs without the C speedups
