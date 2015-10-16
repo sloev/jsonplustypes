@@ -58,20 +58,22 @@ class JsonPlusEncoder(JSONEncoder):
             return JSONEncoder.default(self, obj)
 
 def iteritems(source, format):
-
-    for k, v in source.items():
-        if isinstance(v, list):
-            for a in v:
-                iteritems(a, format)
-        elif isinstance(v, dict):
-            iteritems(v, format)
-        elif isinstance(v, basestring):
-            try:
-                source[k] = datetime.datetime.strptime(v, format)
-            except:
-                pass
-
+    try:
+        for k, v in source.items():
+            if isinstance(v, list):
+                for a in v:
+                    iteritems(a, format)
+            elif isinstance(v, dict):
+                iteritems(v, format)
+            elif isinstance(v, basestring):
+                try:
+                    source[k] = datetime.datetime.strptime(v, format)
+                except:
+                    pass
+    except AttributeError:
+        return
     return source
+
 class JsonPlusDecoder(JSONDecoder):
     """
     Converts a json string, where datetime and timedelta objects were converted
